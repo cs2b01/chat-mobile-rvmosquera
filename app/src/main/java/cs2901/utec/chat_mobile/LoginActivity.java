@@ -1,5 +1,6 @@
 package cs2901.utec.chat_mobile;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -29,6 +30,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
+    public Activity getActivity()
+    {
+        return this;
+    }
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
@@ -52,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         JsonObjectRequest request = new JsonObjectRequest(
             Request.Method.POST,
             "http://10.0.2.2:8080/authenticate",
+            //    "http://127.0.0.1:8080/authenticate",
             jsonMessage,
             new Response.Listener<JSONObject>() {
                 @Override
@@ -61,6 +67,11 @@ public class LoginActivity extends AppCompatActivity {
                         String message = response.getString("message");
                         if(message.equals("Authorized")) {
                             showMessage("Authenticated");
+
+                            Intent intent = new Intent(getActivity(),ContactsActivity.class);
+                            intent.putExtra("user_id", response.getInt("user_id"));
+                            intent.putExtra("username", response.getString("username"));
+                            startActivity(intent);
                         }
                         else {
                             showMessage("Wrong username or password");
